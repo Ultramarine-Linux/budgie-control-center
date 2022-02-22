@@ -1,14 +1,29 @@
-%undefine       _disable_source_fetch
-Name:           budgie-control-center
-Version:        0.3
-Release:        1%{?dist}
-Summary:        fork of GNOME Control Center for the Budgie 10 Series.
+%define gnome_online_accounts_version 3.25.3
+%define glib2_version 2.56.0
+%define gnome_desktop_version 3.35.4
+%define gsd_version 3.35.0
+%define gsettings_desktop_schemas_version 3.37.1
+%define upower_version 0.99.8
+%define gtk3_version 3.22.20
+%define cheese_version 3.28.0
+%define gnome_bluetooth_version 3.18.2
+%define nm_version 1.24
+%undefine _disable_source_fetch
 
-License:        GPLv2+
+%global commit 314132131a46b9ba57b68848c5b32a475034c917
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+
+Name:           budgie-control-center
+Version:        0.4
+Release:        1%{?dist}
+Summary:        Utilities to configure the Budgie desktop
+
+License:        GPLv2+ and CC-BY-SA
 URL:            https://github.com/BuddiesOfBudgie/budgie-control-center
-Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
-Source1:        https://gitlab.gnome.org/GNOME/libgnome-volume-control/-/archive/7a621180b46421e356b33972e3446775a504139c/libgnome-volume-control-7a621180b46421e356b33972e3446775a504139c.tar.gz
-Source2:        https://gitlab.gnome.org/GNOME/libhandy/-/archive/7b38a860ffcec6c2ad28153358cc3d037ddb618f/libhandy-7b38a860ffcec6c2ad28153358cc3d037ddb618f.tar.gz
+Source0:        https://github.com/BuddiesOfBudgie/budgie-control-center/archive/refs/tags/v%{version}.tar.gz
+Source4:        https://gitlab.gnome.org/GNOME/libgnome-volume-control/-/archive/c5ab6037f460406ac9799b1e5765de3ce0097a8b/libgnome-volume-control-c5ab6037f460406ac9799b1e5765de3ce0097a8b.tar.gz
+# https://gitlab.gnome.org/GNOME/budgie-control-center/-/merge_requests/965
+#Patch0:         distro-logo.patch
 
 BuildRequires:  chrpath
 BuildRequires:  cups-devel
@@ -18,7 +33,7 @@ BuildRequires:  gcc
 BuildRequires:  gettext
 BuildRequires:  meson
 BuildRequires:  pkgconfig(accountsservice)
-BuildRequires:  pkgconfig(cheese)
+BuildRequires:  pkgconfig(cheese) >= %{cheese_version}
 BuildRequires:  pkgconfig(cheese-gtk)
 BuildRequires:  pkgconfig(clutter-gtk-1.0)
 BuildRequires:  pkgconfig(colord)
@@ -26,21 +41,21 @@ BuildRequires:  pkgconfig(colord-gtk)
 BuildRequires:  pkgconfig(gcr-3)
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0)
 BuildRequires:  pkgconfig(gdk-wayland-3.0)
-BuildRequires:  pkgconfig(gio-2.0)
-BuildRequires:  pkgconfig(gnome-settings-daemon)
-BuildRequires:  pkgconfig(gnome-desktop-3.0)
-BuildRequires:  pkgconfig(goa-1.0)
+BuildRequires:  pkgconfig(gio-2.0) >= %{glib2_version}
+BuildRequires:  pkgconfig(gnome-desktop-3.0) >= %{gnome_desktop_version}
+BuildRequires:  pkgconfig(gnome-settings-daemon) >= %{gsd_version}
+BuildRequires:  pkgconfig(goa-1.0) >= %{gnome_online_accounts_version}
 BuildRequires:  pkgconfig(goa-backend-1.0)
 BuildRequires:  pkgconfig(grilo-0.3)
-BuildRequires:  pkgconfig(gsettings-desktop-schemas)
+BuildRequires:  pkgconfig(gsettings-desktop-schemas) >= %{gsettings_desktop_schemas_version}
 BuildRequires:  pkgconfig(gsound)
-BuildRequires:  pkgconfig(gtk+-3.0)
+BuildRequires:  pkgconfig(gtk+-3.0) >= %{gtk3_version}
 BuildRequires:  pkgconfig(gudev-1.0)
 BuildRequires:  pkgconfig(ibus-1.0)
 BuildRequires:  pkgconfig(libcanberra-gtk3)
 BuildRequires:  pkgconfig(libgtop-2.0)
 BuildRequires:  pkgconfig(libhandy-1)
-BuildRequires:  pkgconfig(libnm)
+BuildRequires:  pkgconfig(libnm) >= %{nm_version}
 BuildRequires:  pkgconfig(libnma)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libpulse-mainloop-glib)
@@ -52,26 +67,28 @@ BuildRequires:  pkgconfig(mm-glib)
 BuildRequires:  pkgconfig(polkit-gobject-1)
 BuildRequires:  pkgconfig(pwquality)
 BuildRequires:  pkgconfig(smbclient)
-BuildRequires:  pkgconfig(upower-glib)
+BuildRequires:  pkgconfig(upower-glib) >= %{upower_version}
+BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(udisks2)
 %ifnarch s390 s390x
-BuildRequires:  pkgconfig(gnome-bluetooth-1.0)
+BuildRequires:  pkgconfig(gnome-bluetooth-1.0) >= %{gnome_bluetooth_version}
 BuildRequires:  pkgconfig(libwacom)
 %endif
 
 # Versioned library deps
-Requires: cheese-libs%{?_isa}
-Requires: glib2%{?_isa}
-Requires: gnome-desktop3%{?_isa}
-Requires: gnome-online-accounts%{?_isa}
-Requires: gnome-settings-daemon%{?_isa}
-Requires: gsettings-desktop-schemas%{?_isa}
-Requires: gtk3%{?_isa}
-Requires: upower%{?_isa}
+Requires: cheese-libs%{?_isa} >= %{cheese_version}
+Requires: glib2%{?_isa} >= %{glib2_version}
+Requires: gnome-desktop3%{?_isa} >= %{gnome_desktop_version}
+Requires: gnome-online-accounts%{?_isa} >= %{gnome_online_accounts_version}
+Requires: gnome-settings-daemon%{?_isa} >= %{gsd_version}
+Requires: gsettings-desktop-schemas%{?_isa} >= %{gsettings_desktop_schemas_version}
+Requires: gtk3%{?_isa} >= %{gtk3_version}
+Requires: upower%{?_isa} >= %{upower_version}
 %ifnarch s390 s390x
-Requires: gnome-bluetooth%{?_isa}
+Requires: gnome-bluetooth%{?_isa} >= 1:%{gnome_bluetooth_version}
 %endif
+
 
 Requires: %{name}-filesystem = %{version}-%{release}
 # For user accounts
@@ -115,10 +132,11 @@ Provides: control-center = 1:%{version}-%{release}
 Provides: control-center%{?_isa} = 1:%{version}-%{release}
 Obsoletes: control-center < 1:%{version}-%{release}
 
-
 %description
-Budgie Control Center is a fork of GNOME Settings / GNOME Control Center with the intent of providing a simplified list of settings that are applicable to the Budgie 10 series, along with any small quality-of-life settings.
-
+This package contains configuration utilities for the Budgie desktop, which
+allow to configure accessibility options, desktop fonts, keyboard and mouse
+properties, sound setup, desktop theme and background, user interface
+properties, screen resolution, and other settings.
 
 %package filesystem
 Summary: Budgie Control Center directories
@@ -135,120 +153,76 @@ for applications. This package contains directories where applications
 can install configuration files that are picked up by the control-center
 utilities.
 
-
-
 %prep
-%autosetup
-# install subprojects
-tar -xf %{SOURCE1} -C subprojects/
-mv subprojects/libgnome-volume-control-*/* subprojects/gvc
-rm -rf subprojects/libgnome-volume-control-*
-tar -xf %{SOURCE2} -C subprojects/
-mv subprojects/libhandy-*/* subprojects/libhandy
-rm -rf subprojects/libhandy-*
+%autosetup -p1 -n budgie-control-center-%{version}
 
+tar -xvzf %{SOURCE4} --strip-components=1 --no-same-owner -C subprojects/gvc
+
+rm -rf subprojects/libhandy
 
 %build
-%meson
+%meson \
+  -Ddocumentation=true \
+#%if 0%{?fedora}
+#  -Ddistributor_logo=%{_datadir}/pixmaps/fedora_logo_med.png \
+#  -Ddark_mode_distributor_logo=%{_datadir}/pixmaps/fedora_whitelogo_med.png \
+#  -Dmalcontent=true \
+#%endif
+#%if 0%{?rhel}
+#  -Ddistributor_logo=%{_datadir}/pixmaps/fedora-logo.png \
+#  -Ddark_mode_distributor_logo=%{_datadir}/pixmaps/system-logo-white.png \
+#%endif
+  %{nil}
 %meson_build
 
 %install
-rm -rf $RPM_BUILD_ROOT
 %meson_install
 
+# We do want this
+mkdir -p $RPM_BUILD_ROOT%{_datadir}/gnome/wm-properties
 
-%files
+# We don't want these
+rm -rf $RPM_BUILD_ROOT%{_datadir}/gnome/autostart
+rm -rf $RPM_BUILD_ROOT%{_datadir}/gnome/cursor-fonts
+
+# Remove rpath
+chrpath --delete $RPM_BUILD_ROOT%{_bindir}/budgie-control-center
+
+%find_lang %{name} --all-name --with-gnome
+
+%files -f %{name}.lang
 %license LICENSE
+%doc README.md
 %{_bindir}/budgie-control-center
-%{_libexecdir}/budgie-cc-remote-login-helper
-%{_libexecdir}/budgie-control-center-print-renderer
-%{_datadir}/applications/budgie-applications-panel.desktop
-%{_datadir}/applications/budgie-background-panel.desktop
-%{_datadir}/applications/budgie-bluetooth-panel.desktop
-%{_datadir}/applications/budgie-camera-panel.desktop
-%{_datadir}/applications/budgie-color-panel.desktop
-%{_datadir}/applications/budgie-control-center.desktop
-%{_datadir}/applications/budgie-datetime-panel.desktop
-%{_datadir}/applications/budgie-default-apps-panel.desktop
-%{_datadir}/applications/budgie-diagnostics-panel.desktop
-%{_datadir}/applications/budgie-display-panel.desktop
-%{_datadir}/applications/budgie-info-overview-panel.desktop
-%{_datadir}/applications/budgie-keyboard-panel.desktop
-%{_datadir}/applications/budgie-location-panel.desktop
-%{_datadir}/applications/budgie-microphone-panel.desktop
-%{_datadir}/applications/budgie-mouse-panel.desktop
-%{_datadir}/applications/budgie-multitasking-panel.desktop
-%{_datadir}/applications/budgie-network-panel.desktop
-%{_datadir}/applications/budgie-notifications-panel.desktop
-%{_datadir}/applications/budgie-online-accounts-panel.desktop
-%{_datadir}/applications/budgie-power-panel.desktop
-%{_datadir}/applications/budgie-printers-panel.desktop
-%{_datadir}/applications/budgie-region-panel.desktop
-%{_datadir}/applications/budgie-removable-media-panel.desktop
-%{_datadir}/applications/budgie-sharing-panel.desktop
-%{_datadir}/applications/budgie-sound-panel.desktop
-%{_datadir}/applications/budgie-thunderbolt-panel.desktop
-%{_datadir}/applications/budgie-universal-access-panel.desktop
-%{_datadir}/applications/budgie-usage-panel.desktop
-%{_datadir}/applications/budgie-user-accounts-panel.desktop
-%{_datadir}/applications/budgie-wacom-panel.desktop
-%{_datadir}/applications/budgie-wifi-panel.desktop
-%{_datadir}/applications/budgie-wwan-panel.desktop
+%{_datadir}/applications/*.desktop
 %{_datadir}/bash-completion/completions/budgie-control-center
+#%{_datadir}/dbus-1/services/org.buddiesofbudgie.ControlCenter.SearchProvider.service
 %{_datadir}/dbus-1/services/org.buddiesofbudgie.ControlCenter.service
+#%{_datadir}/gettext/
 %{_datadir}/glib-2.0/schemas/org.buddiesofbudgie.ControlCenter.gschema.xml
-%{_datadir}/icons/hicolor/16x16/apps/boa-panel.png
-%{_datadir}/icons/hicolor/16x16/apps/budgie-power-manager.png
-%{_datadir}/icons/hicolor/16x16/apps/budgie-preferences-color.png
-%{_datadir}/icons/hicolor/16x16/apps/budgie-preferences-desktop-display.png
-%{_datadir}/icons/hicolor/16x16/apps/budgie-preferences-system-time.png
-%{_datadir}/icons/hicolor/22x22/apps/boa-panel.png
-%{_datadir}/icons/hicolor/22x22/apps/budgie-power-manager.png
-%{_datadir}/icons/hicolor/22x22/apps/budgie-preferences-color.png
-%{_datadir}/icons/hicolor/22x22/apps/budgie-preferences-desktop-display.png
-%{_datadir}/icons/hicolor/22x22/apps/budgie-preferences-system-time.png
-%{_datadir}/icons/hicolor/24x24/apps/boa-panel.png
-%{_datadir}/icons/hicolor/24x24/apps/budgie-power-manager.png
-%{_datadir}/icons/hicolor/24x24/apps/budgie-preferences-color.png
-%{_datadir}/icons/hicolor/24x24/apps/budgie-preferences-desktop-display.png
-%{_datadir}/icons/hicolor/256x256/apps/boa-panel.png
-%{_datadir}/icons/hicolor/256x256/apps/budgie-power-manager.png
-%{_datadir}/icons/hicolor/256x256/apps/budgie-preferences-color.png
-%{_datadir}/icons/hicolor/256x256/apps/budgie-preferences-system-time.png
-%{_datadir}/icons/hicolor/32x32/apps/boa-panel.png
-%{_datadir}/icons/hicolor/32x32/apps/budgie-power-manager.png
-%{_datadir}/icons/hicolor/32x32/apps/budgie-preferences-color.png
-%{_datadir}/icons/hicolor/32x32/apps/budgie-preferences-desktop-display.png
-%{_datadir}/icons/hicolor/32x32/apps/budgie-preferences-system-time.png
-%{_datadir}/icons/hicolor/48x48/apps/boa-panel.png
-%{_datadir}/icons/hicolor/48x48/apps/budgie-power-manager.png
-%{_datadir}/icons/hicolor/48x48/apps/budgie-preferences-color.png
-%{_datadir}/icons/hicolor/48x48/apps/budgie-preferences-system-time.png
-%{_datadir}/icons/hicolor/64x64/apps/budgie-preferences-color.png
-%{_datadir}/icons/hicolor/scalable/apps/budgie-preferences-color.svg
-%{_datadir}/icons/hicolor/scalable/apps/budgie-preferences-desktop-display.svg
-%{_datadir}/icons/hicolor/scalable/apps/budgie-preferences-system-time.svg
-%{_datadir}/icons/hicolor/scalable/apps/org.buddiesofbudgie.Settings-multitasking-symbolic.svg
-%{_datadir}/icons/hicolor/scalable/apps/org.buddiesofbudgie.Settings.Devel.svg
-%{_datadir}/icons/hicolor/scalable/apps/org.buddiesofbudgie.Settings.svg
-%{_datadir}/icons/hicolor/scalable/categories/budgie-slideshow-symbolic.svg
-%{_datadir}/icons/hicolor/scalable/emblems/budgie-slideshow-emblem.svg
-%{_datadir}/icons/hicolor/scalable/status/budgie-info-symbolic.svg
-%{_datadir}/icons/hicolor/symbolic/apps/org.buddiesofbudgie.Settings-symbolic.svg
-%{_datadir}/locale/*/LC_MESSAGES/budgie-control-center*
-%{_datadir}/metainfo/budgie-control-center.appdata.xml
+%{_datadir}/budgie-control-center/keybindings/*.xml
+%{_datadir}/budgie-control-center/pixmaps
+#%{_datadir}/gnome-shell/search-providers/org.buddiesofbudgie.ControlCenter.search-provider.ini
+#%{_datadir}/icons/budgie-logo-text*.svg
+%{_datadir}/icons/hicolor/*/*/*
+%{_datadir}/man/man1/budgie-control-center.1*
+%{_metainfodir}/budgie-control-center.appdata.xml
+%{_datadir}/pixmaps/budgie-faces
 %{_datadir}/pixmaps/budgie-logo.png
 %{_datadir}/pkgconfig/budgie-keybindings.pc
-%{_datadir}/polkit-1/actions/org.buddiesofbudgie.controlcenter.datetime.policy
-%{_datadir}/polkit-1/actions/org.buddiesofbudgie.controlcenter.remote-login-helper.policy
-%{_datadir}/polkit-1/actions/org.buddiesofbudgie.controlcenter.user-accounts.policy
+%{_datadir}/polkit-1/actions/org.buddiesofbudgie.controlcenter.*.policy
 %{_datadir}/polkit-1/rules.d/budgie-control-center.rules
+%{_datadir}/sounds/budgie/default/*/*.ogg
+%{_libexecdir}/budgie-cc-remote-login-helper
+#%{_libexecdir}/budgie-control-center-goa-helper
+#%{_libexecdir}/budgie-control-center-search-provider
+%{_libexecdir}/budgie-control-center-print-renderer
 
 %files filesystem
-%{_datadir}/budgie-control-center/
-%{_datadir}/sounds/budgie/
-%{_datadir}/pixmaps/budgie-faces/
+%dir %{_datadir}/budgie-control-center
+%dir %{_datadir}/budgie-control-center/keybindings
+%dir %{_datadir}/gnome/wm-properties
 
 %changelog
-* Thu Feb 03 2022 Cappy Ishihara <cappy@cappuchino.xyz>
-- Initial Build
+* Tue Feb 22 2022 Cappy Ishihara <cappy@cappuchino.xyz> - 42~beta-1.um35
+- Initial release
