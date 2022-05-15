@@ -14,7 +14,7 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           budgie-control-center
-Version:        1.0.0
+Version:        1.0.2
 Release:        1%{?dist}
 Summary:        Utilities to configure the Budgie desktop
 
